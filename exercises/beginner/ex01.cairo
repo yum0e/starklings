@@ -15,6 +15,14 @@ end
 # `slot` will map an `address` to the next available `slot` this `address` can use
 # `star` will map an `address` and a `slot` to a `size`
 
+@storage_var
+func slot(address: felt) -> (next_slot: felt):
+end
+
+@storage_var
+func star(address: felt, slot: felt) -> (size: felt):
+end
+
 # TODO
 # Create an event `a_star_is_born`
 # It will log:
@@ -22,6 +30,14 @@ end
 # - the `slot` where this `star` has been registered
 # - the size of the given `star`
 # https://starknet.io/docs/hello_starknet/events.html
+
+@event
+func a_star_is_born(
+    account: felt,
+    slot: felt,
+    size: felt
+    ):
+end
 
 @external
 func collect_dust{syscall_ptr : felt*, pedersen_ptr : HashBuiltin*, range_check_ptr}(amount : felt):
@@ -43,13 +59,28 @@ func light_star{syscall_ptr : felt*, pedersen_ptr : HashBuiltin*, range_check_pt
 ):
     # TODO
     # Get the caller address
+    let (caller_address) = get_caller_address()
+
     # Get the amount on dust owned by the caller
+    let (caller_dust_amount) = dust.read(caller_address)
+
     # Make sure this amount is at least equal to `dust_amount`
+    assert_le(dust_amount, caller_dust_amount)
+
     # Get the caller next available `slot`
+    let (available_slot) = slot.read(caller_address)
+
     # Update the amount of dust owned by the caller
+    dust.write(caller_address, caller_dust_amount - dust_amount)
+
     # Register the newly created star, with a size equal to `dust_amount`
+    star.write(caller_address, available_slot, dust_amount)
+
     # Increment the caller next available slot
+    slot.write(caller_address, available_slot + 1)
+
     # Emit an `a_star_is_born` even with appropiate valued
+    a_star_is_born.emit(caller_address, available_slot, dust_amount)
 
     return ()
 end
@@ -64,6 +95,22 @@ end
 
 # TODO
 # Write two views, for the `star` and `slot` storages
+
+@view
+func view_star{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(
+    address: felt, slot: felt
+) -> (size: felt):
+    let (size) = star.read(address, slot)
+    return (size)
+end
+
+@view
+func view_slot{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(
+    address: felt
+) -> (slot: felt):
+    let (next_slot) = slot.read(address)
+    return (next_slot)
+end
 
 #########
 # TESTS #

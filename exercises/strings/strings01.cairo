@@ -8,7 +8,7 @@
 
 func decode_cipher1() -> (plaintext : felt):
     let ciphertext = 'Another One Bites The Dust'
-    let key = 0
+    let key = 8411259409899549769121697911940999744470501665993583275067088060194581998
     let plaintext = ciphertext + key
     return (plaintext)
 end
