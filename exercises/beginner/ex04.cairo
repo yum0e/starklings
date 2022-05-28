@@ -81,6 +81,7 @@ func insert_star{syscall_ptr : felt*, pedersen_ptr : HashBuiltin*, range_check_p
     dust.write(address, dust_reserve - new_star.size)
 
     let (local current_slot) = slot.read(address)
+    let (current_rank) = rank.read(address)
 
     star.write(address, current_slot, new_star)
 
@@ -92,6 +93,36 @@ func insert_star{syscall_ptr : felt*, pedersen_ptr : HashBuiltin*, range_check_p
     # https://www.cairo-lang.org/docs/how_cairo_works/consts.html#revoked-references
     # That's one of the most tricky feature of cairo. Treat yourself !
     # Also, Cairo doesn't support `elif`, neither chaining multiple comparaisons on a single `if` arm 😔
+    if current_slot + 1 == 1:
+        rank.write(address, current_rank + 1)
+        tempvar syscall_ptr = syscall_ptr
+        tempvar pedersen_ptr = pedersen_ptr
+        tempvar range_check_ptr = range_check_ptr
+    else:
+        tempvar syscall_ptr = syscall_ptr
+        tempvar pedersen_ptr = pedersen_ptr
+        tempvar range_check_ptr = range_check_ptr
+    end
+    if current_slot + 1 == 10:
+        rank.write(address, current_rank + 1)
+        tempvar syscall_ptr = syscall_ptr
+        tempvar pedersen_ptr = pedersen_ptr
+        tempvar range_check_ptr = range_check_ptr
+    else:
+        tempvar syscall_ptr = syscall_ptr
+        tempvar pedersen_ptr = pedersen_ptr
+        tempvar range_check_ptr = range_check_ptr
+    end
+    if current_slot + 1 == 100:
+        rank.write(address, current_rank + 1)
+        tempvar syscall_ptr = syscall_ptr
+        tempvar pedersen_ptr = pedersen_ptr
+        tempvar range_check_ptr = range_check_ptr
+    else:
+        tempvar syscall_ptr = syscall_ptr
+        tempvar pedersen_ptr = pedersen_ptr
+        tempvar range_check_ptr = range_check_ptr
+    end
 
     a_star_is_born.emit(address, current_slot, new_star)
 
