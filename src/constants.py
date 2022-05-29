@@ -4,6 +4,7 @@ exercise_files_architecture = [
     ("exercises/strings", ["strings00", "strings01"]),
     (
         "exercises/implicit_arguments",
+        
         ["implicit_arguments01", "implicit_arguments02", "implicit_arguments03"],
     ),
     ("exercises/recursions", ["recursion01", "array01", "array02", "array03"]),
